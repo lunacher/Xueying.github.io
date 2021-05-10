@@ -1,0 +1,157 @@
+[meta title:"Final of IS445 by Xueying Cui" description:"Distribution and Developments of Affordable Rental Housing in Chicago" /]
+
+[Header
+  fullWidth:true
+  title:"Distribution and Developments of Affordable Rental Housing in Chicago"
+  subtitle:"IS445 Final Project"
+  author:"Xueying Cui"
+  authorLink:"https://idyll-lang.org"
+  date:"May 8, 2021"
+  background:"#222222"
+  color:"#ffffff"
+   /]
+
+[var name:"x" value:0 /]
+
+## Introduction
+Nowadays, it‘s common for people in big cities to rent houses, and the rent also accounts for a large proportion in living expenses. In this case, governments promoting affordable rental housing projects is very important for people with low income or having heavy financial burden. This article aims to analyze the distribution and development of the existing affordable rental housing resources in the city of Chicago. Data used to analyze can be accessed [a href:'https://data.cityofchicago.org/Community-Economic-Development/Affordable-Rental-Housing-Developments/s6ha-ppgi']here[/a] on [a href:'https://data.cityofchicago.org']Chicago Data Portal[/a].   
+
+## Data
+This dataset is updated over time, it consists of 915 records and 14 columns, which includes information like *Community Area Name*, *Property Type*, *Units*, *Address* and so on as of April 23, 2021.
+
+[data name:"maindata" source:"Affordable_Rental_Housing_Developments.csv" /]
+
+[Table data:maindata /]
+
+
+
+In the process of data cleaning, those records that missing geographic information were deleted. The final dataset we used is as follows:
+[data name:"ValidLocationData" source:"Affordable_Rental_Housing_Developments_OmitNainLocation.csv" /]
+
+[Table data:ValidLocationData /]
+
+
+##Main Visualizations
+
+[var name:"select" value:"Community Area Name" /]
+[Select value:select  options:`["Community Area Name", "Community Area Number","Property Type",
+"Zip Code","Management Company"]`  /]
+
+[IdyllVegaLite data:ValidLocationData spec:`{
+  height: 500,
+  //height: 700,
+  mark: "bar",
+  encoding: {
+    x: { field: select, type: "ordinal"},
+    y: { field: "Units", type: "quantitative"},
+    color: colorBy
+  }
+}` /]
+
+In this visualizations, you can choose a field by the select box above the plot to view and compare the units of affordable rental housing resouse of different items.
+
+
+Through this plot, one can learn stuffs about the current situation of affordable rental housing in Chicago. For example, to find the most influential management companies in this field, or see the differences in the amount of units between different community areas.
+
+
+[var name:"colorBy" value:`{}` /]
+[var name:"CANStart" value:10 /]
+[var name:"CANEnd" value:40 /]
+
+[IdyllVegaLite data:ValidLocationData spec:`{
+  width: 500,
+  height: 500,
+  mark: "circle",
+  transform:[{filter:{ field:"Community Area Number", "lte":CANEnd}},
+             {filter:{ field:"Community Area Number", "gte":CANStart}}],
+      
+  encoding: {
+    longitude: { field: "Longitude", type: "quantitative",axis:{title:"Longitud"}},
+    latitude: { field: "Latitude", type: "quantitative",axis:{title:"Latitude"}},
+    color: colorBy
+  }
+}` /]
+
+ [button onClick:`colorBy = {}` ]None[/button]
+ [button onClick:`colorBy = {field: 'Community Area Name', type: 'nominal',scale:{"scheme":"category20b"}}` ]Community Area Name[/button]
+ [button onClick:`colorBy = {field: 'Community Area Number', type: 'nominal',scale:{"scheme":"category20b"}}` ]Community Area Number[/button]
+ [button onClick:`colorBy = {field: 'Property Type', type: 'nominal',scale:{"scheme":"category20b"}}` ]Property Type[/button]
+ [button onClick:`colorBy = {field: 'Units', type: 'quantitative'}` ]Units[/button]
+
+[section]
+// use this part to let user chose a range of community areas to be displayed,*/
+// because there are too many area number with limits kinds of color, which make many areas share the same color */
+Community Area Number from: 1 [Range min:1 max:CANEnd value:CANStart /] 77
+
+Community Area Number to: 1 [Range min:CANStart max:77 value:CANEnd /] 77
+[/section]
+
+
+[var name:"colorBy2" value:`{}` /]
+[var name:"ZCStart" value:60601 /]
+[var name:"ZCEnd" value:60707 /]
+
+[IdyllVegaLite data:ValidLocationData spec:`{
+  width: 500,
+  height: 500,
+  mark: "circle",
+  transform:[{filter:{ field:"Zip Code", "lte":ZCEnd}},
+             {filter:{ field:"Zip Code", "gte":ZCStart}}],
+  encoding: {
+    longitude: { field: "Longitude", type: "ordinal"},
+    latitude: { field: "Latitude", type: "ordinal"},
+    color: colorBy2
+  }
+}` /]
+
+ [section] // use this part to let users chose a range of zip codes to be displayed, because there are too manyamount of them with limits kinds of color, which make many areas share the same color */
+Zip Code from: 60601 [Range min:60601 max:ZCEnd value:ZCStart /] 60808
+
+Zip Code to: 60601 [Range min:ZCStart max:60808 value:ZCEnd /] 60808
+[/section]
+
+ [button onClick:`colorBy2 = {}` ]None[/button]
+ [button onClick:`colorBy2 = {field: 'Zip Code', type: 'nominal',scale:{"scheme":"category20b"}}` ]Zip Code[/button]
+ [button onClick:`colorBy2 = {field: 'Property Type', type: 'nominal',scale:{"scheme":"category20b"}}` ]Property Type[/button]
+ [button onClick:`colorBy2 = {field: 'Units', type: 'quantitative'}` ]Units[/button]
+
+
+In the 2 visualizations list above, we can see the distribution of affordable rental houses based on the informaition of location, the y-axis and x-axis display latitude and longitude respectively.
+
+To cross compare the information, one can select one of the fields beneath the plots and the circles belong to different items of this field will be distinctly marked by colors. And the range sliders of *Zip Code* and *Community Area Number* allow people to focus on the data in a particular range.
+
+##Contextual Visualizations
+All of the contextual visualizations come from [a href:'https://www.chicago.gov/city/en/depts/dcd/supp_info/citywide-affordable-rental-housing-aalysis.html']Citywide Affordable Rental Housing Analysis[/a]. The first 2 can be accessed from a document named [a href:'https://www.chicago.gov/content/dam/city/depts/dcd/general/invest_sw/citywide_affordable_housing_stats.pdf']Citywide Affordable Housing Maps[/a] on the above website, and the last one from another docunment named [a href:'https://www.chicago.gov/content/dam/city/depts/dcd/general/ALL_CA_%20PLUS_CITY-NOAH-LRAH_Counts_and_Chart.pdf']Citywide and Community Area Affordable Housing Charts[/a].
+
+###Contextual Viz 1.1
+[img 
+  src:'https://lunacher.github.io/cv1_1.png' 
+  style:`{height:'800px'}`
+/]
+
+
+###Contextual Viz 1.2
+[img 
+  src:'https://lunacher.github.io/cv1_2.jpg' 
+  style:`{height:'800px'}`
+/]
+
+
+The above 2 images show the proportions of 2 kinds of affordable rental housing units(*LRAH:legally restricted affordable housing* and *NOAH:naturally occuring affordable housing* ) among all the rental units in each community area of Chicago.
+These visualizations can help people figure out the competition of obtaining an affordable rental housing unit in a particular community area, and, show that there is a long way for some community areas to develop affordable rental housing.It's distinct to find that community areas in the center part of Chicago have higher proportions of affordable houses. And the main credit belongs to NOAH, even though the areas with high proportion of NOAH usually don't have a high proportion of LRAH. Besides, the comparision between LRAH and NOAH can tell the effect of goverment‘s planning and the self-regulation of market.
+
+###Contextual Viz 2
+[img 
+  src:'https://lunacher.github.io/cv2.jpg' 
+  style:`{height:'500px'}` 
+/]
+This image display the units number of different layout types among affordable rental houses and houses with higher rent. That's also helpful as a reference when someone need to rent a house or appartment, because the need of a single man is clearly different with one who need to raising 2 kids. We can tell from this visualization that affordable housing takes high proportion in 2BR units, and a vsmall scale in 3+BR units.
+
+
+
+
+##Souces
+###Dataset
+[a href:'https://data.cityofchicago.org/Community-Economic-Development/Affordable-Rental-Housing-Developments/s6ha-ppgi']https://data.cityofchicago.org/Community-Economic-Development/Affordable-Rental-Housing-Developments/s6ha-ppgi[/a]
+###Contextual Visualizations
+[a href:'https://www.chicago.gov/city/en/depts/dcd/supp_info/citywide-affordable-rental-housing-aalysis.html']https://www.chicago.gov/city/en/depts/dcd/supp_inflso/citywide-affordable-rental-housing-aalysis.html[/a]
